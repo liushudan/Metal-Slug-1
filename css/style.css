@@ -1,0 +1,21 @@
+.home-screen{
+    position: relative;
+    background: url(../images/start-screen.png) no-repeat;
+}
+
+.home-font{
+    position: absolute;
+    top: 350px;
+    left: 230px;
+    text-transform: uppercase;
+    color: white;
+    animation: blinker 2s linear infinite;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
+}
+
+#game{
+    display: none;
+}
