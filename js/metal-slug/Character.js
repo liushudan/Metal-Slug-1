@@ -1,51 +1,76 @@
-const CHARACTER_WIDTH = 36;
-const CHARACTER_HEIGHT = 50;
-const CHARACTER_START_POSITION_LEFT = 100;
-const CHARACTER_START_POSITION_TOP = -50;
-const MINIMUM_LEFT=20;
-const MAXIMUM_LEFT=245;
-const MAXIMUM_TOP=150;
+const SPRITE_WIDTH=650;
+const SPRITE_SIZE=50;
+const SPRITE_RUNNING_RIGHT=100;
+const SPRITE_RUNNING_LEFT=150;
+const SPRITE_OFFSET=10;
 
 class Character {
-  constructor(context) {
-    this.characterX = CHARACTER_START_POSITION_LEFT;
-    this.characterY = CHARACTER_START_POSITION_TOP;
-    this.characterWidth=CHARACTER_WIDTH;
-    this.characterHeight=CHARACTER_HEIGHT;
-    this.characterDX = 0;
-    this.characterDY = 0;
-    this.characterSpriteX=0;
-    this.characterCtx = context;
-    this.characterImage = new Image();
-    this.characterImage.src = 'images/character-sprite.png';
-    this.drawCharacter();
+  constructor() {
+    this.gameUI = new GameUI();
+    this.sx = 0;
+    this.sy = 0;
+    this.height = SPRITE_SIZE;
+    this.width = SPRITE_SIZE;
+    this.x = 100;
+    this.y = 0;
+    this.minBoundary = 10;
+    this.character = new Image();
+    this.character.src = "images/character-sprite.png";
+    this.planeY = 250; // where to land in the background
+    this.move = 4;
+    this.frame = 0;
+    this.inAir = true;
+    this.initalMovement = false;
+    this.moveCharacter = true;
+    this.turnLeft=false;
   }
 
-  drawCharacter() {
-    this.characterCtx.drawImage(this.characterImage, this.characterSpriteX, 0, this.characterWidth, this.characterHeight, 100, 250, this.characterWidth, this.characterHeight);
-    this.characterSpriteX+=36;
+  drawCharacter(camera) {
+    this.checkBoundary();
+    this.gameUI.canvasCtx.drawImage(this.character, this.sx, this.sy, this.width, this.height, this.x-camera.x, this.y, this.width * 2, this.height * 2);
+    if (this.inAir) {
+      if (this.y == this.planeY) {
+        this.inAir = false;
+        this.initalMovement = true;
+      }
+      this.y++;
+    }
   }
 
-  moveCharacter(positionX, positionY) {
-    this.characterDX = positionX;
-    this.characterDY = positionY;
-    this.characterX += this.characterDX;
-    this.characterY += this.characterDY;
-    this.restrictCharacter();
-    this.drawCharacter();
+  updateCharacter(dx, dy) {
+    if (this.initalMovement) {
+      this.frame++;
+      if (this.frame > 2) {
+        this.sx += SPRITE_SIZE;
+        if (this.sx > SPRITE_WIDTH-SPRITE_OFFSET) {
+          this.sx = 0;
+        }
+
+        if (dx > 0 && this.moveCharacter) {
+          //move right
+          this.x += this.move;
+          this.sy = SPRITE_RUNNING_RIGHT;
+          this.turnLeft=false;
+        }
+        else if (dx < 0 && this.moveCharacter) {
+          //move left
+          this.x -= this.move;
+          this.sy = SPRITE_RUNNING_LEFT;
+          this.turnLeft=true;
+        }
+
+        this.frame = 0;
+      }
+    }
   }
 
-  restrictCharacter(){
-    if(this.characterX<=MINIMUM_LEFT){
-      this.characterX=MINIMUM_LEFT;
+  checkBoundary() {
+    if (this.x < this.minBoundary) {
+      this.x = this.minBoundary;
     }
+  }
 
-    if(this.characterX>=MAXIMUM_LEFT){
-      this.characterX=MAXIMUM_LEFT;
-    }
-
-    if(this.characterY>MAXIMUM_TOP){
-      this.characterY=MAXIMUM_TOP;
-    }
+  setBoundaryX(x) {
+    this.minBoundary = x;
   }
 }

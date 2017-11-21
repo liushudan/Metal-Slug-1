@@ -25,6 +25,11 @@ class GameUI {
   }
 
   clear(x, y, width, height) {
-    this.ctx.clearRect(x, y, width, height);
+    this.canvasCtx.clearRect(x, y, width, height);
   }
+  
+  scrollWindow (x, y) {
+      this.canvasCtx.translate(x, y);
+  }
+
 }

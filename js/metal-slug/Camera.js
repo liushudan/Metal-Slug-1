@@ -1,19 +1,15 @@
 const CAMERA_WIDTH = 650;
 const CAMERA_HEIGHT = 400;
-const CAMERA_SPEED = 256;
 
 class Camera{
-  constructor(map){
-    this.cameraX=0;
-    this.cameraY=0;
-    this.cameraWidth=CAMERA_WIDTH;
-    this.cameraHeight=CAMERA_HEIGHT;
-    this.speed=0;
-    this.maxCameraX=0;
-    this.maxCameraY=0;
+  constructor(){
+    this.x = 0;
+    this.y = 0;
+    this.width = CAMERA_WIDTH;
+    this.height = CAMERA_HEIGHT;
   }
 
-  move(){
-
+  update(canvas, character){
+    this.x=character.x-(canvas.width/8)>>0;
   }
 }
