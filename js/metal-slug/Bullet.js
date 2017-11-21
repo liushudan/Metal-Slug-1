@@ -15,6 +15,7 @@ class Bullet {
     this.character=character;
     this.camera=camera;
     this.bulletLeft=this.character.turnLeft;
+    this.frame=0;
   }
 
   drawBullet() {
@@ -28,15 +29,20 @@ class Bullet {
         this.y = this.character.y+50;
       }
     }
-    this.gameUI.canvasCtx.drawImage(this.bullet, this.sx, this.sy, this.width, this.height, this.x, this.y, this.width, this.height);
+
+    if(this.frame>5){
+      this.gameUI.canvasCtx.drawImage(this.bullet, this.sx, this.sy, this.width, this.height, this.x, this.y, this.width, this.height);
+      this.frame=0;
+    }
+    this.frame++;
   }
 
   moveBullet() {
     if (this.bulletLeft){
-      this.x-=10;
+      this.x-=5;
     }
     else{
-      this.x+=10;
+      this.x+=5;
     }
     this.drawBullet();
   }

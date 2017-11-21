@@ -40,7 +40,7 @@ class Character {
   updateCharacter(dx, dy) {
     if (this.initalMovement) {
       this.frame++;
-      if (this.frame > 2) {
+      if (this.frame > 4) {
         this.sx += SPRITE_SIZE;
         if (this.sx > SPRITE_WIDTH-SPRITE_OFFSET) {
           this.sx = 0;
