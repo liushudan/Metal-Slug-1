@@ -4,6 +4,8 @@ class PreLoader {
       1: "images/start-screen.png",
       2: "images/background.jpg",
       3: "images/character-sprite.png",
+      4 : "images/parachute-marco.png",
+      5 : "images/enemy-soldier-sprite.png"
     };
     this.loadImages(this.imageSources);
   }

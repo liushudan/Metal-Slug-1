@@ -12,12 +12,17 @@ class MetalSlug {
     this.sy = 0;
     this.frame = 0;
     this.bulletList = [];
+    this.enemyList = [];
+    this.checkPoint = [764, 1025, 1800, 2285];
+    this.checkPointReached = false;
   }
 
-  init() {
+  init(enemyInformation) {
     this.background = new Image();
     this.background.src = "images/background.jpg";
-    this.character = new Character(this.camera.x);
+    this.character = new Character();
+
+    this.enemyInformation = enemyInformation;
     this.initialiseKeys();
     this.bindKeyPress(this.keys);
     this.start();
@@ -27,9 +32,9 @@ class MetalSlug {
     let animation = window.requestAnimationFrame(() => this.start());
     this.gameUI.clear(0, 0, this.width, this.height);
     this.renderBackground();
+
     this.character.drawCharacter(this.camera);
     if (this.keys[39]) {
-      //right arrow
       this.character.updateCharacter(1, 0);
       if (this.keys[32]) {
         this.createBullet();
@@ -48,10 +53,48 @@ class MetalSlug {
     }
     else if (this.keys[32]) {
       //space
-      this.createBullet();
+      if (!this.character.inAir) {
+        this.createBullet();
+      }
+    }
+    else {
+      //idle position
+      if (this.character.inAir == false) {
+        this.character.idlePosition();
+      }
     }
     this.moveCamera();
     this.moveBullet();
+
+
+    if (this.checkPoint.indexOf(parseInt(this.character.x + 400)) >= 0) {
+      if (this.checkPointReached == false) {
+        console.log("checkpoint reached"); // make this checkpoint true so as to control the camera here and then restrict the characters movement
+        this.renderEnemies(this.enemyInformation[this.checkPoint.indexOf(parseInt(this.character.x + 400))]);
+        this.checkPointReached = true;
+      }
+    }
+
+
+    this.enemyList.forEach(
+      function (enemy) {
+        enemy.drawEnemy();
+        enemy.updateEnemy();
+      }
+    );
+  }
+
+
+  renderEnemies(enemyInformation) {
+    let listObject = [];
+    let diffX = 0;
+    enemyInformation.forEach((data) => {
+        let enemy = new Enemy(data["src"], 600 + diffX, 250, data["width"], data["height"]);
+        listObject.push(enemy);
+        diffX += 60;
+      }
+    );
+    this.enemyList = listObject;
   }
 
   renderBackground() {
@@ -78,7 +121,7 @@ class MetalSlug {
     for (let i = 1; i < 223; i++) {
       this.keys.push(false);
     }
-  } 
+  }
 
   bindKeyPress(keys) {
     document.body.addEventListener("keydown", function (e) {
