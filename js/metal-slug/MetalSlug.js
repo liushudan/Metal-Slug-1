@@ -93,6 +93,7 @@ class MetalSlug {
       enemy.updateEnemy();
       this.collisionCheck();
     });
+    this.checkArea();
   }
 
   renderBackground() {
@@ -182,4 +183,24 @@ class MetalSlug {
     this.enemyList = this.utils.filterArray(tempEnemyList);
     this.bulletList = this.utils.filterArray(tempBulletList);
   }
+
+  checkArea(){
+    let tempBulletList=this.bulletList;
+    let tempEnemyList=this.enemyList;
+    for(let i=0; i<tempBulletList.length; i++){
+      if(tempBulletList[i]!==null && tempBulletList[i].x>600){
+        tempBulletList[i]=null;
+      }
+    }
+
+    for(let i=0; i<tempEnemyList.length; i++){
+      if(tempEnemyList[i]!==null && tempEnemyList[i].x<0){
+        tempEnemyList[i]=null;
+      }
+    }
+
+    this.bulletList=this.utils.filterArray(tempBulletList);
+    this.enemyList=this.utils.filterArray(tempEnemyList);
+  }
+
 }

@@ -39,13 +39,13 @@ class Enemy{
 		}
 	}
 
-
-	// checkEnemyPosition(){
-   //  if(this.x<0){
-   //  	this.enemyTurnLeft=false;
-   //  }
-   //  if(this.x>550){
-   //  	this.enemyTurnLeft=true;
-	// 	}
-	// }
+	checkEnemyPosition(){
+    if(this.x<0){
+    	let possibilityToTurn=Math.random();
+    	this.enemyTurnLeft=false;
+    }
+    if(this.x>550){
+    	this.enemyTurnLeft=true;
+		}
+	}
 }
