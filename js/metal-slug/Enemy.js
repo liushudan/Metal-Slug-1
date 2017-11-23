@@ -14,9 +14,9 @@ class Enemy{
 		this.enemyTurnLeft=true;
 	}
 
-	drawEnemy(){
-		 this.gameUI.canvasCtx.drawImage(this.enemeyElement,this.sx,this.sy,this.width,this.height,this.x,this.y,this.width*2,this.height*2);
-	}
+	drawEnemy() {
+    this.gameUI.canvasCtx.drawImage(this.enemeyElement, this.sx, this.sy, this.width, this.height, this.x, this.y, this.width * 2, this.height * 2);
+  }
 
 	updateEnemy(){
 		// this.checkEnemyPosition();
@@ -38,6 +38,7 @@ class Enemy{
 			this.frame = 0;
 		}
 	}
+
 
 	// checkEnemyPosition(){
    //  if(this.x<0){

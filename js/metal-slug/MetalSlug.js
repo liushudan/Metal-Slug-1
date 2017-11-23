@@ -12,9 +12,13 @@ class MetalSlug {
     this.sy = 0;
     this.frame = 0;
     this.bulletList = [];
+    this.bulletCount = 0;
+    this.reloadTime = 0;
     this.enemyList = [];
+    this.animation = '';
     this.checkPoint = [764, 1025, 1800, 2285];
     this.checkPointReached = false;
+    this.utils = new SortArray();
   }
 
   init(enemyInformation) {
@@ -29,22 +33,31 @@ class MetalSlug {
   }
 
   start() {
-    let animation = window.requestAnimationFrame(() => this.start());
+    this.animation = window.requestAnimationFrame(() => this.start());
     this.gameUI.clear(0, 0, this.width, this.height);
     this.renderBackground();
-
     this.character.drawCharacter(this.camera);
+    this.frame++;
+
+    if (this.bulletCount > 10) {
+      this.reloadTime++;
+      if (this.reloadTime > 200) {
+        this.bulletCount = 0;
+        this.reloadTime = 0;
+      }
+    }
+
     if (this.keys[39]) {
       this.character.updateCharacter(1, 0);
       if (this.keys[32]) {
-        this.createBullet();
+        this.renderBullet();
       }
     }
     else if (this.keys[37]) {
       //left
       this.character.updateCharacter(-1, 0);
       if (this.keys[32]) {
-        this.createBullet();
+        this.renderBullet();
       }
     }
     else if (this.keys[38]) {/*up arrow*/
@@ -54,7 +67,7 @@ class MetalSlug {
     else if (this.keys[32]) {
       //space
       if (!this.character.inAir) {
-        this.createBullet();
+        this.renderBullet();
       }
     }
     else {
@@ -63,10 +76,11 @@ class MetalSlug {
         this.character.idlePosition();
       }
     }
+
     this.moveCamera();
-    this.moveBullet();
-
-
+    if (this.bulletList.length > 0) {
+      this.moveBullet();
+    }
     if (this.checkPoint.indexOf(parseInt(this.character.x + 400)) >= 0) {
       if (this.checkPointReached == false) {
         console.log("checkpoint reached"); // make this checkpoint true so as to control the camera here and then restrict the characters movement
@@ -74,27 +88,11 @@ class MetalSlug {
         this.checkPointReached = true;
       }
     }
-
-
-    this.enemyList.forEach(
-      function (enemy) {
-        enemy.drawEnemy();
-        enemy.updateEnemy();
-      }
-    );
-  }
-
-
-  renderEnemies(enemyInformation) {
-    let listObject = [];
-    let diffX = 0;
-    enemyInformation.forEach((data) => {
-        let enemy = new Enemy(data["src"], 600 + diffX, 250, data["width"], data["height"]);
-        listObject.push(enemy);
-        diffX += 60;
-      }
-    );
-    this.enemyList = listObject;
+    this.enemyList.forEach((enemy) => {
+      enemy.drawEnemy();
+      enemy.updateEnemy();
+      this.collisionCheck();
+    });
   }
 
   renderBackground() {
@@ -103,18 +101,6 @@ class MetalSlug {
 
   moveCamera() {
     this.camera.update(this.gameUI.canvas, this.character);
-  }
-
-  createBullet() {
-    let bullet = new Bullet(this.character, this.camera);
-    bullet.drawBullet();
-    this.bulletList.push(bullet);
-  }
-
-  moveBullet() {
-    this.bulletList.forEach((bullet) => {
-      bullet.moveBullet();
-    })
   }
 
   initialiseKeys() {
@@ -132,4 +118,68 @@ class MetalSlug {
     }, true);
   }
 
+  renderBullet() {
+    if (this.frame > 10 && this.bulletCount <= 10) {
+      let bullet = new Bullet(this.character, this.camera);
+      bullet.drawBullet();
+      this.bulletList.push(bullet);
+      this.frame = 0;
+      this.bulletCount++;
+    }
+  }
+
+  moveBullet() {
+    this.bulletList.forEach((bullet) => {
+      bullet.moveBullet();
+      bullet.drawBullet();
+    })
+  }
+
+  renderEnemies(enemyInformation) {
+    let listObject = [];
+    enemyInformation.forEach((data) => {
+        let enemy = new Enemy(data['src'], data['x'], data['y'], data['width'], data['height']);
+        listObject.push(enemy);
+      }
+    );
+    this.enemyList = listObject;
+  }
+
+  collisionCheck() {
+    let tempEnemyList = this.enemyList;
+    let tempBulletList = this.bulletList;
+    let characterLeft, characterRight;
+    let enemyLeft, enemyRight, enemyTop, enemyBottom;
+    let bulletLeft, bulletRight, bulletTop, bulletBottom;
+
+    characterLeft = this.character.x - this.camera.x;
+    characterRight = (this.character.x - this.camera.x) + this.character.width;
+
+    for (let i = 0; i < tempEnemyList.length; i++) {
+      enemyLeft = tempEnemyList[i].x;
+      enemyRight = tempEnemyList[i].x + tempEnemyList[i].width;
+      enemyTop = tempEnemyList[i].y;
+      enemyBottom = tempEnemyList[i].y + tempEnemyList[i].height;
+
+      if ((characterRight > enemyLeft) && (characterLeft < enemyRight)) {
+        window.cancelAnimationFrame(this.animation);
+      }
+
+      for (let j = 0; j < tempBulletList.length; j++) {
+        if (tempBulletList[j] !== null) {
+          bulletLeft = tempBulletList[j].x;
+          bulletRight = tempBulletList[j].x + tempBulletList[j].width;
+          bulletTop = tempBulletList[j].y;
+          bulletBottom = tempBulletList[j].y + tempBulletList[j].height;
+
+          if ((bulletRight > (enemyLeft+(tempEnemyList[i].width)/1.5)) && (bulletLeft < enemyRight)) {
+            tempEnemyList[i] = null;
+            tempBulletList[i] = null;
+          }
+        }
+      }
+    }
+    this.enemyList = this.utils.filterArray(tempEnemyList);
+    this.bulletList = this.utils.filterArray(tempBulletList);
+  }
 }

@@ -2,7 +2,7 @@ const BULLET_WIDTH = 14;
 const BULLET_HEIGHT = 8;
 
 class Bullet {
-  constructor(character,camera) {
+  constructor(character, camera) {
     this.x = 0;
     this.y = 0;
     this.sx = 0;
@@ -12,38 +12,31 @@ class Bullet {
     this.bullet = new Image();
     this.bullet.src = 'images/bullet.png';
     this.gameUI = new GameUI();
-    this.character=character;
-    this.camera=camera;
-    this.bulletLeft=this.character.turnLeft;
-    this.frame=0;
+    this.character = character;
+    this.camera = camera;
+    this.bulletLeft = this.character.turnLeft;
   }
 
   drawBullet() {
-    if(this.x===0){
-      if (this.character.turnLeft) {
-        this.x += this.character.x - (this.camera.x-10);
-        this.y = this.character.y+50;
+      if (this.x === 0) {
+        if (this.character.turnLeft) {
+          this.x += this.character.x - (this.camera.x - 10);
+          this.y = this.character.y + 50;
+        }
+        else {
+          this.x += (this.character.x + (1.5 * this.character.width)) - this.camera.x;
+          this.y = this.character.y + 50;
+        }
       }
-      else {
-        this.x += (this.character.x + (1.5 * this.character.width)) - this.camera.x;
-        this.y = this.character.y+50;
-      }
-    }
-
-    if(this.frame>5){
       this.gameUI.canvasCtx.drawImage(this.bullet, this.sx, this.sy, this.width, this.height, this.x, this.y, this.width, this.height);
-      this.frame=0;
-    }
-    this.frame++;
   }
 
   moveBullet() {
-    if (this.bulletLeft){
-      this.x-=5;
+    if (this.bulletLeft) {
+      this.x -= 5;
     }
-    else{
-      this.x+=5;
+    else {
+      this.x += 5;
     }
-    this.drawBullet();
   }
 }

@@ -1,11 +1,10 @@
-const SPRITE_WIDTH=650;
-const SPRITE_SIZE=50;
+const SPRITE_WIDTH = 650;
+const SPRITE_SIZE = 50;
 const SPRITE_NORMAL_RIGHT = 0;
 const SPRITE_NORMAL_LEFT = 50;
 const SPRITE_RUNNING_RIGHT = 100;
 const SPRITE_RUNNING_LEFT = 150;
 const SPRITE_OFFSET = 10;
-
 class Character {
   constructor() {
     this.gameUI = new GameUI();
@@ -15,7 +14,7 @@ class Character {
     this.y = 0;
     this.minBoundary = 10;
     this.character = new Image();
-    this.character.src = "images/parachute-marco.png"; 
+    this.character.src = "images/parachute-marco.png";
     this.planeY = 250; // where to land in the background
 
     this.dx = 1; // 1 for right  and negative for left
@@ -25,29 +24,29 @@ class Character {
     this.inAir = true;
     this.initalMovement = false;
     this.moveCharacter = true;
-    this.turnLeft=false;
+    this.turnLeft = false;
   }
 
   drawCharacter(camera) {
-   if (this.inAir) {
+    if (this.inAir) {
       this.height = 77;
       this.width = 77;
-      if ( (this.y +50) == this.planeY) {
+      if ((this.y + 70) == this.planeY) {
         this.inAir = false;
         this.initalMovement = true;
+
       }
       this.y++;
-    }else{
-           this.character.src = "images/character-sprite.png";
-           this.height = SPRITE_SIZE;
-           this.width = SPRITE_SIZE;
-           this.y = this.planeY;
+    }
+    else {
+      this.character.src = "images/character-sprite.png";
+      this.height = SPRITE_SIZE;
+      this.width = SPRITE_SIZE;
+      this.y = this.planeY;
     }
 
     this.checkBoundary();
-    this.gameUI.canvasCtx.drawImage(this.character, this.sx, this.sy, this.width, this.height, this.x-camera.x, this.y, this.width * 2, this.height * 2);
-    
-
+    this.gameUI.canvasCtx.drawImage(this.character, this.sx, this.sy, this.width, this.height, this.x - camera.x, this.y, this.width * 2, this.height * 2);
   }
 
   updateCharacter(dx, dy) {
@@ -55,7 +54,7 @@ class Character {
       this.frame++;
       if (this.frame > 4) {
         this.sx += SPRITE_SIZE;
-        if (this.sx > SPRITE_WIDTH-SPRITE_OFFSET) {
+        if (this.sx > SPRITE_WIDTH - SPRITE_OFFSET) {
           this.sx = 0;
         }
 
@@ -63,14 +62,14 @@ class Character {
           //move right
           this.x += this.move;
           this.sy = SPRITE_RUNNING_RIGHT;
-          this.turnLeft=false;
+          this.turnLeft = false;
           this.dx = 1;
         }
         else if (dx < 0 && this.moveCharacter) {
           //move left
           this.x -= this.move;
           this.sy = SPRITE_RUNNING_LEFT;
-          this.turnLeft=true;
+          this.turnLeft = true;
           this.dx = -1;
         }
 
@@ -79,19 +78,19 @@ class Character {
     }
   }
 
-  idlePosition(){
+  idlePosition() {
     this.frame++;
     if (this.frame > 4) {
-        this.sx += SPRITE_SIZE;
-        if (this.sx > SPRITE_WIDTH-SPRITE_OFFSET) {
-          this.sx = 0;
-        }
-        if (this.dx>0) {
-          this.sy = SPRITE_NORMAL_RIGHT;
-        }
-        else{
-          this.sy = SPRITE_NORMAL_LEFT;
-        }
+      this.sx += SPRITE_SIZE;
+      if (this.sx > SPRITE_WIDTH - SPRITE_OFFSET) {
+        this.sx = 0;
+      }
+      if (this.dx > 0) {
+        this.sy = SPRITE_NORMAL_RIGHT;
+      }
+      else {
+        this.sy = SPRITE_NORMAL_LEFT;
+      }
       this.frame = 0;
     }
   }
